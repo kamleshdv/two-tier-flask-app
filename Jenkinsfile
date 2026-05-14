@@ -1,5 +1,9 @@
 pipeline {
     agent any
+    
+    triggers {
+        githubPush()   // 👈 ye line add karo
+    }
 
     environment {
         DOCKER_IMAGE = "flask-app"          // local image naam
