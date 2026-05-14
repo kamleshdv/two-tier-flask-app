@@ -8,6 +8,7 @@ pipeline {
     environment {
         DOCKER_IMAGE = "flask-app"          // local image naam
         DOCKER_TAG = "${BUILD_NUMBER}"      // har build ka alag tag
+        DOCKER_HUB_CREDENTIALS = credentials('jenkinskk')  // Jenkins credential ID
     }
 
     stages {
@@ -27,6 +28,16 @@ pipeline {
                 echo '🔨 Docker image build ho rahi hai...'
                 sh "docker build -t ${DOCKER_IMAGE}:${DOCKER_TAG} ."
                 sh "docker tag ${DOCKER_IMAGE}:${DOCKER_TAG} ${DOCKER_IMAGE}:latest"
+            }
+        }
+
+          // ── Stage 3: Docker Hub pe Push karo ─────────────────────────────────
+        stage('Push to Docker Hub') {
+            steps {
+                echo '📤 Docker Hub pe push ho raha hai...'
+                sh "echo ${DOCKER_HUB_CREDENTIALS_PSW} | docker login -u ${DOCKER_HUB_CREDENTIALS_USR} --password-stdin"
+                sh "docker push ${DOCKER_IMAGE}:${DOCKER_TAG}"
+                sh "docker push ${DOCKER_IMAGE}:latest"
             }
         }
 
