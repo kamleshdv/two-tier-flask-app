@@ -1,0 +1,53 @@
+version: '3.8'
+
+services:
+
+  # ── MySQL Database ──────────────────────────────────────────────────────────
+  mysql:
+    image: mysql:8.0
+    container_name: mysql-db
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: mydb
+      MYSQL_USER: flaskuser
+      MYSQL_PASSWORD: flaskpassword
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql   # data persist hoga container band hone ke baad bhi
+      - ./message.sql:/docker-entrypoint-initdb.d/message.sql  # DB init script
+    networks:
+      - flask-mysql-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "root", "-prootpassword"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ── Flask Application ───────────────────────────────────────────────────────
+  flask-app:
+    build: .
+    container_name: flask-app
+    restart: always
+    ports:
+      - "5000:5000"
+    environment:
+      MYSQL_HOST: mysql          # service name hi hostname hota hai Docker network mein
+      MYSQL_USER: flaskuser
+      MYSQL_PASSWORD: flaskpassword
+      MYSQL_DB: mydb
+    depends_on:
+      mysql:
+        condition: service_healthy   # MySQL ready hone ke baad hi Flask start hoga
+    networks:
+      - flask-mysql-net
+
+# ── Volumes ─────────────────────────────────────────────────────────────────
+volumes:
+  mysql_data:
+
+# ── Network ──────────────────────────────────────────────────────────────────
+networks:
+  flask-mysql-net:
+    driver: bridge
