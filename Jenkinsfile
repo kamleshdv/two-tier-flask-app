@@ -6,7 +6,7 @@ pipeline {
     }
 
     environment {
-        DOCKER_IMAGE = "flask-app"          // local image naam
+        DOCKER_IMAGE = "kamleshdv/flask-app"          // local image naam
         DOCKER_TAG = "${BUILD_NUMBER}"      // har build ka alag tag
         DOCKER_HUB_CREDENTIALS = credentials('jenkinskk')  // Jenkins credential ID
     }
