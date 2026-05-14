@@ -13,7 +13,7 @@ pipeline {
             steps {
                 echo '📥 GitHub se code aa raha hai...'
                 git branch: 'main',
-                    url: 'https://github.com/your-username/two-tier-flask-app.git'  // apna repo URL daalo
+                    url: 'https://github.com/kamleshdv/two-tier-flask-app.git'  // apna repo URL daalo
             }
         }
 
